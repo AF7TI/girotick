@@ -72,7 +72,7 @@ def get_data(s, n=1):
 
     #get data from GIRO, save to stationdata
     urlpt1 = "http://lgdc.uml.edu/common/DIDBGetValues?ursiCode="
-    urlpt2 = "&charName=mufd,hmF2,TEC,scaleF2,hF2,hmF1,hmE,foF2,foF1,foE,foEs,fbEs,yF1,hE,yF2&DMUF=3000"
+    urlpt2 = "&charName=MUFD,hmF2,TEC,scaleF2,hF2,hmF1,hmE,foF2,foF1,foE,foEs,fbEs,yF1,hE,yF2&DMUF=3000"
     df_list = []
     for index, row in stationdf.iterrows():
         #print (row['code'])
