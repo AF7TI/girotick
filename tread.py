@@ -10,22 +10,30 @@ from get_data_station import get_data
 import sys
 import logging
 import pandas as pd
-
 import psycopg2
 
-try:
-    con = psycopg2.connect("dbname='postgres' user='postgres' host='localhost' password='mysecretpassword'")
-except:
-    print ("I am unable to connect to the database")
 
 cwd = os.getcwd()
 
 days = int(sys.argv[1])
 threadcount = int(sys.argv[2])
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s",
+    handlers=[
+        #logging.FileHandler("{0}/{1}.log".format(logPath, fileName)),
+        logging.StreamHandler(sys.stdout)
+    ])
 
-logging.basicConfig(filename='sys.stdout',level=logging.INFO)
-logging.info('{} tread.py start'.format(dt.datetime.now()))
+logger = logging.getLogger()
+
+logger.info('{} tread.py start'.format(dt.datetime.now()))
+
+try:
+    con = psycopg2.connect("dbname='postgres' user='postgres' host='localhost' password='mysecretpassword'")
+except:
+    logger.error("I am unable to connect to the database")
 
 # lock to serialize console output
 lock = threading.Lock()
@@ -33,23 +41,22 @@ lock = threading.Lock()
 def do_work(item):
     #time.sleep(1) # pretend to do some lengthy work.
     # Make sure the whole print completes or threads can mix up output in one line.
-    print ('item is: ' + item)
-    logging.info('{} do_work item {}'.format(dt.datetime.now(), item))
+    logger.info ('start ' + item)
+    logger.info('{} do_work item {}'.format(dt.datetime.now(), item))
     get_data(item, days)
-#    with lock:
- #       print(threading.current_thread().name,item)
-##        logging.info('{} do_work item {} {}'.format(dt.datetime.now(), threading.current_thread().name, item))
+    #with lock:
+        #logging.info('{} do_work item {} {}'.format(dt.datetime.now(), threading.current_thread().name, item))
 # The worker thread pulls an item from the queue and processes it
 def worker():
     while True:
         item = q.get()
-        logging.info('{} worker got item {} from queue'.format(dt.datetime.now(), item))
+        logger.info('{} worker got item {} from queue'.format(dt.datetime.now(), item))
         do_work(item)
         q.task_done()
-        logging.info('{} worker done w item {}'.format(dt.datetime.now(), item))
+        logger.info('{} worker done w item {}'.format(dt.datetime.now(), item))
 # Create the queue and thread pool.
 q = Queue()
-logging.info('{} ### creating queue with tread pool count {} ###'.format(dt.datetime.now(), threadcount))
+logger.info('{} ### creating queue with tread pool count {} ###'.format(dt.datetime.now(), threadcount))
 for i in range(threadcount):
      t = threading.Thread(target=worker)
      t.daemon = True  # thread dies when main thread (only non-daemon thread) exits.
@@ -63,5 +70,5 @@ for item in stationdf:
     q.put(item)
 
 q.join()       # block until all tasks are done
-
-print('time:',time.perf_counter() - start)
+con.close()    # close db
+logger.info('time:',time.perf_counter() - start)
