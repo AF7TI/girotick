@@ -13,30 +13,7 @@ CREATE TABLE station (
         UNIQUE (code),
         FOREIGN KEY(region_id) REFERENCES region (id)
 );
-CREATE TABLE temp_measurement (
-        id SERIAL,
-        time TEXT,
-        cs TEXT,
-        "fof2" TEXT,
-        "fof1" TEXT,
-        "mufd" TEXT,
-        "foes" TEXT,
-        "foe" TEXT,
-        "hf2" TEXT,
-        "he" TEXT,
-        "hme" TEXT,
-        "hmf2" TEXT,
-        "hmf1" TEXT,
-        "yf2" TEXT,
-        "yf1" TEXT,
-        "tec" TEXT,
-        "scalef2" TEXT,
-        "fbes" TEXT,
-        "altitude" TEXT,
-        station_id INTEGER,
-        PRIMARY KEY (id),
-        UNIQUE (id)
-);
+
 CREATE TABLE measurement (
         id SERIAL,
         time TEXT,
