@@ -1,5 +1,7 @@
 FROM python:latest
 
+RUN pip install --upgrade pip
+
 WORKDIR /usr/local/tick
 
 COPY * ./
