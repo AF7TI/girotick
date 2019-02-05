@@ -112,7 +112,7 @@ def get_data(s, n=1):
     #logger.info ('row count: combined {}'.format(concatted.count()))
 
     #to shift 0 to 360 to -180 to 180 values for correct mapping, sun altitude
-    stationdf.ix[stationdf.longitude > 180, 'longitude'] = stationdf.longitude - 360
+    stationdf.loc[stationdf.longitude > 180, 'longitude'] = stationdf.longitude - 360
 
     #merge to get station data
     stationdf.reset_index(inplace=True)
