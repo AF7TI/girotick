@@ -58,11 +58,8 @@ def get_data(s, n=1):
         # Handle target environment that doesn't support HTTPS verification
         ssl._create_default_https_context = _create_unverified_https_context
 
-    if n == '1':
-        fromDate = str((dt.datetime.now() - dt.timedelta(days=int(1))).strftime('%Y-%m-%d'))
-    else:
-        fromDate = str((dt.datetime.now() - dt.timedelta(days=int(n))).strftime('%Y-%m-%d'))
-    toDate = str((dt.datetime.now() + dt.timedelta(days=1)).strftime('%Y-%m-%d'))
+    fromDate = str((dt.datetime.now() - dt.timedelta(minutes=int(20))).strftime('%Y-%m-%dT%H:%M:%S'))
+    toDate = str((dt.datetime.now() + dt.timedelta(minutes=int(5))).strftime('%Y-%m-%dT%H:%M:%S'))
     urlfrom = '&fromDate=' + fromDate
     urlto = '&toDate=' + toDate
     urldates = urlfrom + urlto
