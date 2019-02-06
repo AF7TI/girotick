@@ -34,6 +34,9 @@ con.close()
 
 starttime=time.time()
 while True:
+  # GIRO would like us to start polls at 8 minutes past a 15-minute mark, i.e. 8/23/38/53 minutes after the hour.
+  wait = 900.0 - ((time.time() - 480.0) % 900.0)
+  logger.info("sleeping %.1f seconds", (wait))
+  time.sleep(wait)
   logger.info("start tick")
   subprocess.call(['python', cwd + '/tread.py', '1', '4'])
-  time.sleep(300.0 - ((time.time() - starttime) % 300.0))
