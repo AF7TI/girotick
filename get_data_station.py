@@ -3,6 +3,8 @@ import os
 from pysolar.solar import *
 import time
 import psycopg2
+import urllib.request
+import io
 
 cwd = os.getcwd()
 
@@ -80,7 +82,12 @@ def get_data(s, n=1):
     df_list = []
     for index, row in stationdf.iterrows():
         logger.info('{} read_csv {} {}{}{}{}'.format(dt.datetime.now(), row['code'], urlpt1, row['code'], urlpt2, urldates))
-        df=pd.read_csv(urlpt1 + row['code'] + urlpt2 + urldates,
+        
+        #to avoid hanging if target unavailable fetch page with urllib using 10 second timeout then handoff to pandas
+        with urllib.request.urlopen(urlpt1 + row['code'] + urlpt2 + urldates, timeout=10) as conn:
+            pagecontent = conn.read()
+            
+        df = pd.read_table(io.StringIO(pagecontent.decode('utf-8')),
             comment='#',
             delim_whitespace=True,
             parse_dates=[0],
