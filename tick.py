@@ -5,6 +5,12 @@ import sys
 import logging
 import psycopg2
 
+DB_NAME='postgres'
+DB_USER='postgres'
+DB_HOST='localhost'
+DB_PASSWORD='mysecretpassword'
+DB_TIMEOUT=5000 #postgres timeout
+
 cwd = os.getcwd()
 
 logging.basicConfig(
@@ -18,16 +24,24 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 try:
-    con = psycopg2.connect("dbname='postgres' user='postgres' host='localhost' password='mysecretpassword'")
+    con = psycopg2.connect("dbname={} user={} host={} password={} options='-c statement_timeout={}'".format(DB_NAME, DB_USER, DB_HOST, DB_PASSWORD, DB_TIMEOUT))
+    logger.warning("connected to database")
 except:
     logger.error("Unable to connect to the database")
 
 cursor = con.cursor()
 
 try:
+    schema = cursor.execute("""SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'""")
+    for table in cursor.fetchall():
+        logger.warning(table)
+except:
+    logger.error("Unable to get database schema")
+
+try:
     cursor.execute(open("dbsetup.sql", "r").read())
 except:
-    logger.error("Unable to execute database cursor")
+    logger.error("Unable to execute dbsetup.sql does schema already exist?")
 
 cursor.close()
 con.close()
@@ -39,4 +53,4 @@ while True:
   logger.info("sleeping %.1f seconds", (wait))
   time.sleep(wait)
   logger.info("start tick")
-  subprocess.call(['python', cwd + '/tread.py', '1', '4'])
+  subprocess.call(['python', cwd + '/tread.py'])
