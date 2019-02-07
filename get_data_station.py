@@ -1,29 +1,30 @@
 import sys
-import os
+import ssl
+import datetime as dt
+import numpy as np
+from sqlalchemy.types import String, Integer
+from datetime import datetime
+from datetime import timedelta
+import logging
+import pandas as pd
+import threading
 from pysolar.solar import *
 import time
 import psycopg2
 import urllib.request
 import io
 
-cwd = os.getcwd()
+DB_NAME='postgres'
+DB_USER='postgres'
+DB_HOST='localhost'
+DB_PASSWORD='mysecretpassword'
+DB_TIMEOUT=5000 #postgres timeout
 
-def get_data(s, n=1):
+def get_data(s, timeout=10):
 
-    #import sys
-    import ssl
-    import datetime as dt
-    import fileinput
-    import numpy as np
-    import logging
-    from sqlalchemy.types import String, Integer
-    from datetime import datetime
-    from datetime import timedelta
-    from logging.handlers import RotatingFileHandler
-    import pandas as pd
+    start_time = time.time()
 
     # lock to serialize console output
-    import threading
     lock = threading.Lock()
 
     logging.basicConfig(
@@ -36,19 +37,17 @@ def get_data(s, n=1):
 
     logger = logging.getLogger()
 
-    #logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
-
     logger.info('{} get_data.py start {}'.format(dt.datetime.now(), s))
 
     try:
-        con = psycopg2.connect("dbname='postgres' user='postgres' host='localhost' password='mysecretpassword'")
+        con = psycopg2.connect("dbname={} user={} host={} password={} options='-c statement_timeout={}'".format(DB_NAME, DB_USER, DB_HOST, DB_PASSWORD, DB_TIMEOUT))
     except:
         logger.error("I am unable to connect to the database")
 
     now = dt.datetime.now()
 
     from sqlalchemy import create_engine
-    engine = create_engine('postgresql://postgres:mysecretpassword@localhost:5432/postgres')
+    engine = create_engine('postgresql://{}:{}@{}:5432/{}'.format(DB_USER, DB_PASSWORD, DB_HOST, DB_NAME))
 
     #added 4/21 for SSL error workaround
     try:
@@ -73,8 +72,8 @@ def get_data(s, n=1):
     ss = pd.Series(stationdf['id'])
     ss = int(ss)
     #only get records from sql that we're getting from didbase to save resources
-    since = datetime.now() - timedelta(days=n+1)
-    nn = n+2
+    #since = datetime.now() - timedelta(days=n+1)
+    #nn = n+2
 
     #get data from GIRO, save to stationdata
     urlpt1 = "http://lgdc.uml.edu/common/DIDBGetValues?ursiCode="
@@ -82,11 +81,10 @@ def get_data(s, n=1):
     df_list = []
     for index, row in stationdf.iterrows():
         logger.info('{} read_csv {} {}{}{}{}'.format(dt.datetime.now(), row['code'], urlpt1, row['code'], urlpt2, urldates))
-        
-        #to avoid hanging if target unavailable fetch page with urllib using 10 second timeout then handoff to pandas
-        with urllib.request.urlopen(urlpt1 + row['code'] + urlpt2 + urldates, timeout=10) as conn:
+        with urllib.request.urlopen(urlpt1 + row['code'] + urlpt2 + urldates, timeout=timeout) as conn:
             pagecontent = conn.read()
-            
+            #print(pagecontent)
+
         df = pd.read_table(io.StringIO(pagecontent.decode('utf-8')),
             comment='#',
             delim_whitespace=True,
@@ -136,7 +134,6 @@ def get_data(s, n=1):
 
     #calculate sun altitude
     unprocessed['altitude']=np.nan
-    start_time = time.time()
     n = 0
     for index, row in unprocessed.iterrows():
         if pd.isnull(row['altitude']):
@@ -146,7 +143,6 @@ def get_data(s, n=1):
             date = date.replace(tzinfo=tz)
             unprocessed.loc[index, 'altitude'] = get_altitude( row['latitude'],row['longitude'], date)
     end_time = time.time()
-    #logger.info('{} pysolar processed {} rows for {} in {} seconds'.format(dt.datetime.now(),n, s,  round(end_time - start_time, 2)))
     unprocessed.sort_values(by=['time'], inplace=True)
 
     unprocessed = unprocessed[['time','cs','fof2','fof1','mufd','foes','foe','hf2','he','hme','hmf2','hmf1','yf2','yf1','tec','scalef2','fbes','altitude', 'station_id']]
@@ -154,8 +150,7 @@ def get_data(s, n=1):
     unprocessed[['altitude']] = unprocessed[['altitude']].round({'altitude': 1})
     #logger.info('{} to_sql start {}'.format(dt.datetime.now(),s))
     unprocessed.to_sql('measurement', con=engine, if_exists='append', index=False)
+    end_time = time.time()
     #logger.info('{} to_sql complete {}'.format(dt.datetime.now(), s))
     #print ('complete {} {} new records'.format(s, len(unprocessed.index)))
     logger.info('{} processed {} rows for {} in {} seconds'.format(dt.datetime.now(),len(unprocessed), s,  round(end_time - start_time, 2)))
-
-#get_data(sys.argv[1])
