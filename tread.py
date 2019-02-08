@@ -7,21 +7,21 @@ import pandas as pd
 import psycopg2
 import get_data_station
 from get_data_station import get_data
+import os
 
-DB_NAME='postgres'
-DB_USER='postgres'
-DB_HOST='localhost'
-DB_PASSWORD='mysecretpassword'
-DB_TIMEOUT=5000 #postgres timeout
+DB_USER=os.getenv("DB_USER")
+DB_PASSWORD=os.getenv("DB_PASSWORD")
+DB_HOST=os.getenv("DB_HOST")
+DB_NAME=os.getenv("DB_NAME")
+DB_TIMEOUT= os.getenv('DB_TIMEOUT', 5000)
 
-MAX_WORKERS=4 #threadcount
-URL_TIMEOUT=10 #urllib timeout for giro page fetch
+MAX_WORKERS= os.getenv('MAX_WORKERS', 4) #threadcount
+URL_TIMEOUT = os.getenv('URL_TIMEOUT', 60) #urllib timeout for giro page fetch 60secs if not set
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s",
     handlers=[
-        #logging.FileHandler("{0}/{1}.log".format(logPath, fileName)),
         logging.StreamHandler(sys.stdout)
     ])
 
