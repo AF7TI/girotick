@@ -13,14 +13,16 @@ import time
 import psycopg2
 import urllib.request
 import io
+import os
 
-DB_NAME='postgres'
-DB_USER='postgres'
-DB_HOST='localhost'
-DB_PASSWORD='mysecretpassword'
-DB_TIMEOUT=5000 #postgres timeout
+DB_USER=os.getenv("DB_USER")
+DB_PASSWORD=os.getenv("DB_PASSWORD")
+DB_HOST=os.getenv("DB_HOST")
+DB_NAME=os.getenv("DB_NAME")
+DB_TIMEOUT= os.getenv('DB_TIMEOUT', 5000)
+URL_TIMEOUT = os.getenv('URL_TIMEOUT', 60)
 
-def get_data(s, timeout=10):
+def get_data(s, URL_TIMEOUT):
 
     start_time = time.time()
 
@@ -31,7 +33,6 @@ def get_data(s, timeout=10):
     level=logging.INFO,
     format="%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s",
     handlers=[
-        #logging.FileHandler("{0}/{1}.log".format(logPath, fileName)),
         logging.StreamHandler(sys.stdout)
     ])
 
@@ -49,7 +50,6 @@ def get_data(s, timeout=10):
     from sqlalchemy import create_engine
     engine = create_engine('postgresql://{}:{}@{}:5432/{}'.format(DB_USER, DB_PASSWORD, DB_HOST, DB_NAME))
 
-    #added 4/21 for SSL error workaround
     try:
         _create_unverified_https_context = ssl._create_unverified_context
     except AttributeError:
@@ -78,10 +78,11 @@ def get_data(s, timeout=10):
     #get data from GIRO, save to stationdata
     urlpt1 = "http://lgdc.uml.edu/common/DIDBGetValues?ursiCode="
     urlpt2 = "&charName=MUFD,hmF2,TEC,scaleF2,hF2,hmF1,hmE,foF2,foF1,foE,foEs,fbEs,yF1,hE,yF2&DMUF=3000"
+    #urlpt2 = "&charName=MUFD,hmF2,TEC,foF2,foE,foEs&DMUF=3000" #standard parameters
     df_list = []
     for index, row in stationdf.iterrows():
         logger.info('{} read_csv {} {}{}{}{}'.format(dt.datetime.now(), row['code'], urlpt1, row['code'], urlpt2, urldates))
-        with urllib.request.urlopen(urlpt1 + row['code'] + urlpt2 + urldates, timeout=timeout) as conn:
+        with urllib.request.urlopen(urlpt1 + row['code'] + urlpt2 + urldates, timeout=URL_TIMEOUT) as conn:
             pagecontent = conn.read()
             #print(pagecontent)
 
@@ -91,10 +92,12 @@ def get_data(s, timeout=10):
             parse_dates=[0],
             names = ['time', 'cs', 'fof2', 'qd', 'fof1', 'qd', 'mufd', 'qd', 'foes', 'qd', 'foe', 'qd', 'hf2', 'qd', 'he', 'qd', 'hme', 'qd', 'hmf2', 'qd', 'hmf1', 'qd', 'yf2', 'qd', 'yf1', 'qd', 'tec', 'qd', 'scalef2', 'qd', 'fbes', 'qd'])\
             .assign(station_id=row['id'])
+            #names = ['time', 'cs', 'fof2', 'qd', 'mufd', 'qd', 'foes', 'qd', 'foe', 'qd', 'hmf2', 'qd', 'tec', 'qd'])\ #standard parameters
         df_list.append(df)
     stationdata=pd.concat(df_list)
     logger.info('{} read_csv complete {}'.format(dt.datetime.now(),s))
     stationdata = stationdata[['station_id', 'time', 'cs', 'fof2', 'fof1', 'mufd', 'foes', 'foe', 'hf2', 'he', 'hme', 'hmf2', 'hmf1', 'yf2',  'yf1',  'tec', 'scalef2', 'fbes']]
+    #stationdata = stationdata[['station_id', 'time', 'cs', 'fof2', 'mufd', 'foes', 'foe', 'hmf2', 'tec']] #standard parameters
 
     #logger.info('{} getting processed records for {} from {} to {}'.format(dt.datetime.now(),s, fromDate, toDate))
     processed = pd.read_sql("SELECT * FROM measurement WHERE station_id = '{}'".format(ss), con)
@@ -146,6 +149,7 @@ def get_data(s, timeout=10):
     unprocessed.sort_values(by=['time'], inplace=True)
 
     unprocessed = unprocessed[['time','cs','fof2','fof1','mufd','foes','foe','hf2','he','hme','hmf2','hmf1','yf2','yf1','tec','scalef2','fbes','altitude', 'station_id']]
+    #unprocessed = unprocessed[['time','cs','fof2','fof1','mufd','foes','foe','hf2','he','hme','hmf2','hmf1','yf2','yf1','tec','scalef2','fbes','altitude', 'station_id']] #standard parameters
 
     unprocessed[['altitude']] = unprocessed[['altitude']].round({'altitude': 1})
     #logger.info('{} to_sql start {}'.format(dt.datetime.now(),s))
@@ -154,3 +158,4 @@ def get_data(s, timeout=10):
     #logger.info('{} to_sql complete {}'.format(dt.datetime.now(), s))
     #print ('complete {} {} new records'.format(s, len(unprocessed.index)))
     logger.info('{} processed {} rows for {} in {} seconds'.format(dt.datetime.now(),len(unprocessed), s,  round(end_time - start_time, 2)))
+    
