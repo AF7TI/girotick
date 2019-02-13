@@ -103,7 +103,7 @@ INSERT INTO "station" VALUES(50,'Campo Grande, Brazil','CGK21',305,-20.5,'',5,NU
 INSERT INTO "station" VALUES(51,'Gibilmanna, Italy','GM037',14,37.9,'',6,NULL);
 INSERT INTO "station" VALUES(52,'Jicamarca, Peru','JI91J',283.2,-12,'',5,NULL);
 INSERT INTO "station" VALUES(53,'Wuhan, China','WU430',114.4,30.5,'',2,NULL);
-INSERT INTO "station" VALUES(54,'Niue Island','ND61R',169.93,-19.07,'',8,NULL);
+INSERT INTO "station" VALUES(54,'Niue Island','ND61R',190.07,-19.07,'',8,NULL);
 INSERT INTO "station" VALUES(55,'Mohe, China','MH453',122.52,52,'',2,NULL);
 INSERT INTO "station" VALUES(56,'Ramey, Puerto Rico','PRJ18',292.9,18.5,'',4,NULL);
 INSERT INTO "station" VALUES(57,'Gakona, AK, USA','GA762',215,62.38,'',4,NULL);
