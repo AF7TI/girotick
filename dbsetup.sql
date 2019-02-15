@@ -103,11 +103,11 @@ INSERT INTO "station" VALUES(50,'Campo Grande, Brazil','CGK21',305,-20.5,'',5,NU
 INSERT INTO "station" VALUES(51,'Gibilmanna, Italy','GM037',14,37.9,'',6,NULL);
 INSERT INTO "station" VALUES(52,'Jicamarca, Peru','JI91J',283.2,-12,'',5,NULL);
 INSERT INTO "station" VALUES(53,'Wuhan, China','WU430',114.4,30.5,'',2,NULL);
-INSERT INTO "station" VALUES(54,'Niue Island','ND61R',169.93,-19.07,'',8,NULL);
+INSERT INTO "station" VALUES(54,'Niue Island','ND61R',190.07,-19.07,'',8,NULL);
 INSERT INTO "station" VALUES(55,'Mohe, China','MH453',122.52,52,'',2,NULL);
 INSERT INTO "station" VALUES(56,'Ramey, Puerto Rico','PRJ18',292.9,18.5,'',4,NULL);
 INSERT INTO "station" VALUES(57,'Gakona, AK, USA','GA762',215,62.38,'',4,NULL);
-INSERT INTO "station" VALUES(58,'Santa Maria, Brazil','SMK29',307.81,-29.69,'',5,NULL);
+INSERT INTO "station" VALUES(58,'Santa Maria, Brazil','SMK29',306.29,-29.73,'',5,NULL);
 INSERT INTO "station" VALUES(59,'Lualualei, Hawaii','LL721',201.85,21.43,'',4,NULL);
 INSERT INTO "station" VALUES(60,'Belem, Brazil','BLJ03',311.56,1.43,NULL,5,NULL);
 INSERT INTO "station" VALUES(61,'Wallops Island, VA, USA','WP937',284.5,37.9,NULL,4,NULL);
@@ -118,7 +118,7 @@ INSERT INTO "station" VALUES(65,'Kent Island, Maryland, USA','KI939',283.72,38.9
 INSERT INTO "station" VALUES(66,'Sopron, Hungary','SO148',16.72,47.63,NULL,6,NULL);
 INSERT INTO "station" VALUES(67,'EISCAT Tromso, Norway','TR170',19.22,69.58,NULL,6,NULL);
 INSERT INTO "station" VALUES(68,'Eareckson Air Station','EA653',185.92,52.73,NULL,2,NULL);
-INSERT INTO "station" VALUES(69,'Rome, Italy RO041','RO041',185.92,12.5,NULL,6,NULL);
+INSERT INTO "station" VALUES(69,'Rome, Italy RO041','RO041',12.5,41.9,NULL,6,NULL);
 INSERT INTO "station" VALUES(70,'San Juan, Puerto Rico','SJJ18',293.75,18.11,NULL,5,NULL);
 
 COMMIT;
