@@ -128,6 +128,7 @@ def get_data(s, URL_TIMEOUT):
     unprocessed = unprocessed.applymap(lambda x: x.replace('---','') if type(x) is str else x)
 
     # round fof2 to 3 decimals
+    unprocessed['fof2'] = unprocessed['fof2'].astype(float)
     unprocessed['fof2'] = unprocessed['fof2'].apply(lambda x: round(x, 3))
 
     #filter out errors
@@ -154,7 +155,6 @@ def get_data(s, URL_TIMEOUT):
     unprocessed = unprocessed[['time','cs','fof2','fof1','mufd','foes','foe','hf2','he','hme','hmf2','hmf1','yf2','yf1','tec','scalef2','fbes','altitude', 'station_id']]
     #unprocessed = unprocessed[['time','cs','fof2','fof1','mufd','foes','foe','hf2','he','hme','hmf2','hmf1','yf2','yf1','tec','scalef2','fbes','altitude', 'station_id']] #standard parameters
 
-    df['column'] = df['column'].apply(lambda x: round(x, decimals))
     unprocessed[['altitude']] = unprocessed[['altitude']].round({'altitude': 1})
     #logger.info('{} to_sql start {}'.format(dt.datetime.now(),s))
     unprocessed.to_sql('measurement', con=engine, if_exists='append', index=False)
