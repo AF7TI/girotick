@@ -11,7 +11,6 @@ CREATE TABLE station (
         UNIQUE (id),
         UNIQUE (name),
         UNIQUE (code),
-        FOREIGN KEY(region_id) REFERENCES region (id)
 );
 
 CREATE TABLE measurement (
@@ -42,14 +41,6 @@ CREATE TABLE measurement (
 
 BEGIN TRANSACTION;
 
-INSERT INTO "region" VALUES(1,'test');
-INSERT INTO "region" VALUES(2,'Asia');
-INSERT INTO "region" VALUES(3,'Africa');
-INSERT INTO "region" VALUES(4,'North America');
-INSERT INTO "region" VALUES(5,'South America');
-INSERT INTO "region" VALUES(6,'Europe');
-INSERT INTO "region" VALUES(7,'Africa');
-INSERT INTO "region" VALUES(8,'Australia');
 INSERT INTO "station" VALUES(1,'Austin, TX, USA','AU930',262.3,30.4,'',4,NULL);
 INSERT INTO "station" VALUES(2,'El Arenosillo, Spain','EA036',353.3,37.1,'',6,NULL);
 INSERT INTO "station" VALUES(3,'Roquetes, Spain','EB040',0.5,40.8,'',6,NULL);
