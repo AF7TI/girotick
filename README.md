@@ -1,5 +1,5 @@
 # girotick
-Fetch ionosphere data from Global Ionospheric Radio Observatory lgdc.uml.edu DIDBGetValues and store in dynamo or postgres. Backend for [giroapp](https://github.com/AF7TI/giroapp)
+Fetch ionosphere data from Global Ionospheric Radio Observatory lgdc.uml.edu DIDBGetValues and store in DynamoDB or PostgreSQL. Backend for [giroapp](https://github.com/AF7TI/giroapp)
 
 ## Installation
 
