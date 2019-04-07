@@ -3,7 +3,7 @@ Fetch ionosphere data from Global Ionospheric Radio Observatory lgdc.uml.edu DID
 
 ## Installation
 
-Widespread usage is strongly discouraged because GIRO doesn't need a ton of database connections. Please consume data from an existing [giroapp webservice](https://github.com/AF7TI/giroapp#running-code)
+Widespread usage is strongly discouraged because GIRO doesn't need a ton of database connections. Please consume data from an existing [giroapi](https://github.com/AF7TI/giroapi#running-code)
 
 ## Contributing
 Contributions welcome! Forgive my intial barbaric use of github. Fork the project and open a pull request.
