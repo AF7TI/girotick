@@ -2,7 +2,7 @@ boto3==1.9.130
 botocore==1.12.130
 docutils==0.14
 jmespath==0.9.4
-numpy==1.16.1
+numpy==1.22.0
 pandas==0.24.1
 pysolar==0.8
 python-dateutil==2.8.0
